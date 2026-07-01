@@ -1,5 +1,6 @@
 import { v } from "convex/values"
 import { internal } from "./_generated/api"
+import { Id } from "./_generated/dataModel"
 import { action, internalMutation } from "./_generated/server"
 
 /**
@@ -42,7 +43,7 @@ export const join = action({
     estimatedMonthlyCost: v.number(),
     submittedLang: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler:async (ctx, args): Promise<{ success: boolean; waitlistId: Id<"waitlist">}> => {
     // Basic server-side validation — never trust the client.
     if (args.companyName.trim().length < 2) {
       throw new Error("companyName_too_short");

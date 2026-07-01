@@ -1,14 +1,14 @@
 "use node";
 
 import { v } from "convex/values"
-import { action } from "./_generated/server"
+import { internalAction } from "./_generated/server"
 
 /**
  * Sends a Markdown-formatted lead notification to a Telegram chat via the
  * Bot API. Requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID to be set in the
  * Convex deployment environment variables.
  */
-export const sendTelegramNotification = action({
+export const sendTelegramNotification = internalAction({
   args: {
     companyName: v.string(),
     contactName: v.string(),
