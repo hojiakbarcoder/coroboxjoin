@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as crons from "../crons.js";
 import type * as telegram from "../telegram.js";
 import type * as waitlist from "../waitlist.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  crons: typeof crons;
   telegram: typeof telegram;
   waitlist: typeof waitlist;
 }>;

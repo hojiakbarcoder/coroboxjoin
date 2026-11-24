@@ -1,5 +1,5 @@
-import CoroboxLanding from "../components/CoroboxLanding";
+import WenzzdayLanding from "../components/WenzzdayLanding";
 
 export default function Page() {
-  return <CoroboxLanding />;
+  return <WenzzdayLanding />;
 }

@@ -36,7 +36,7 @@ export const sendTelegramNotification = internalAction({
     };
 
     const text = [
-      "*New Corobox Waitlist Lead*",
+      "*New Waitlist Lead (legacy form)*",
       "",
       `*Company:* ${escapeMarkdown(args.companyName)}`,
       `*Contact:* ${escapeMarkdown(args.contactName)}`,
@@ -50,6 +50,67 @@ export const sendTelegramNotification = internalAction({
     const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
     const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "Markdown",
+        disable_web_page_preview: true,
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      console.error("Telegram API error:", res.status, body);
+      return { ok: false, error: body };
+    }
+
+    return { ok: true };
+  },
+});
+
+/**
+ * Notification for the Wenzzday Robotics contact form.
+ */
+export const sendInspectionRequestNotification = internalAction({
+  args: {
+    name: v.string(),
+    email: v.string(),
+    company: v.string(),
+    partType: v.string(),
+    monthlyVolume: v.number(),
+    inspectionMethod: v.string(),
+    attachmentUrls: v.array(v.string()),
+  },
+  handler: async (_ctx, args) => {
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    if (!botToken || !chatId) {
+      console.error(
+        "Telegram credentials missing: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set."
+      );
+      return { ok: false, error: "missing_credentials" };
+    }
+
+    const files = args.attachmentUrls.length
+      ? ["", `*Attachments (${args.attachmentUrls.length}):*`, ...args.attachmentUrls]
+      : ["", "*Attachments:* none"];
+
+    const text = [
+      "*New Wenzzday Robotics Lead*",
+      "",
+      `*Name:* ${escapeMarkdown(args.name)}`,
+      `*Email:* ${escapeMarkdown(args.email)}`,
+      `*Company:* ${escapeMarkdown(args.company)}`,
+      `*Part type:* ${escapeMarkdown(args.partType)}`,
+      `*Monthly volume:* ${args.monthlyVolume.toLocaleString("en-US")} parts`,
+      `*Current inspection:* ${escapeMarkdown(args.inspectionMethod)}`,
+      ...files,
+    ].join("\n");
+
+    const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
